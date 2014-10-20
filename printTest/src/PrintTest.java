@@ -11,7 +11,7 @@ public class PrintTest   implements Printable{
         System.out.println("pageIndex="+pageIndex);
         Component c = null;
         //print string
-        String str = "中华民族是勤劳、勇敢和富有智慧的伟大民族。";
+        String str = "134143545536";
         //转换成Graphics2D
         Graphics2D g2 = (Graphics2D) gra;
         //设置打印颜色为黑色
@@ -20,12 +20,15 @@ public class PrintTest   implements Printable{
         //打印起点坐标
         double x = pf.getImageableX();
         double y = pf.getImageableY();
+        g2.translate(x,y);
+        double xx = pf.getHeight();
+        double yy = pf.getWidth();
 
         switch(pageIndex){
             case 0:
                 //设置打印字体（字体名称、样式和点大小）（字体名称可以是物理或者逻辑名称）
                 //Java平台所定义的五种字体系列：Serif、SansSerif、Monospaced、Dialog 和 DialogInput
-                Font font = new Font("新宋体", Font.PLAIN, 9);
+                Font font = new Font("新宋体", Font.PLAIN, 32);
                 g2.setFont(font);//设置字体
                 //BasicStroke   bs_3=new   BasicStroke(0.5f);
                 float[]   dash1   =   {2.0f};
@@ -39,16 +42,29 @@ public class PrintTest   implements Printable{
                 //首字符的基线(右下部)位于用户空间中的 (x, y) 位置处
                 //g2.drawLine(10,10,200,300);
 
-                Image src = Toolkit.getDefaultToolkit().getImage("C:\\Users\\vive\\Desktop\\lvlv\\云演示\\pc-1024-768.jpg");
-                g2.drawImage(src,(int)x,(int)y,c);
+                Image src = Toolkit.getDefaultToolkit().getImage("C:\\Users\\vive\\Desktop\\22.JPG");
+
                 int img_Height=src.getHeight(c);
                 int img_width=src.getWidth(c);
-                //System.out.println("img_Height="+img_Height+"img_width="+img_width) ;
 
-                g2.drawString(str, (float)x, (float)y+1*heigth+img_Height/2);
-                g2.drawLine((int)x,(int)(y+1*heigth+img_Height+10),(int)x+200,(int)(y+1*heigth+img_Height+10));
 
-                g2.drawImage(src,(int)x,(int)(y+1*heigth+img_Height+11),c);
+                double pageW= pf.getImageableWidth();
+                double pageH = pf.getImageableHeight();
+                double imageW = src.getWidth(c);
+                double imageH = src.getHeight(c);
+                double scaleX = pageW/imageW;
+                double scaleY = pageH/imageH;
+                double scaleFactor = Math.min(scaleX, scaleY);
+                g2.scale(scaleFactor, scaleFactor);
+                g2.drawImage(src,(int)x,(int)y,c);
+
+
+
+                System.out.println("img_Height="+img_Height+"img_width="+img_width) ;
+
+                g2.drawString(str, (float)img_width-506, (float)img_Height-200);
+
+               // g2.drawImage(src,(int)x,(int)(y+1*heigth+img_Height+11),c);
 
                 return PAGE_EXISTS;
             default:
@@ -67,8 +83,8 @@ public class PrintTest   implements Printable{
         pf.setOrientation(PageFormat.PORTRAIT);
         //    通过Paper设置页面的空白边距和可打印区域。必须与实际打印纸张大小相符。
         Paper p = new Paper();
-        p.setSize(590,840);//纸张大小
-        p.setImageableArea(10,10, 590,840);//A4(595 X 842)设置打印区域，其实0，0应该是72，72，因为A4纸的默认X,Y边距是72
+        p.setSize(595.2,842);//纸张大小
+        p.setImageableArea(0,0, 595.2,842);//A4(595 X 842)设置打印区域，其实0，0应该是72，72，因为A4纸的默认X,Y边距是72
         pf.setPaper(p);
         //    把 PageFormat 和 Printable 添加到书中，组成一个页面
         book.append(new PrintTest(), pf);
