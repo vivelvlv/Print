@@ -45,7 +45,7 @@ public class PrintTest   implements Printable{
                 int img_width=src.getWidth(c);
                 //System.out.println("img_Height="+img_Height+"img_width="+img_width) ;
 
-                g2.drawString(str, (float)x, (float)y+1*heigth+img_Height);
+                g2.drawString(str, (float)x, (float)y+1*heigth+img_Height/2);
                 g2.drawLine((int)x,(int)(y+1*heigth+img_Height+10),(int)x+200,(int)(y+1*heigth+img_Height+10));
 
                 g2.drawImage(src,(int)x,(int)(y+1*heigth+img_Height+11),c);
