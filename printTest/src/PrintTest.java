@@ -2,13 +2,15 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.print.*;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.List.*;
 
 public class PrintTest implements Printable {
     private String account;
     private String password;
-    static String img_path = System.getProperty("user.dir") + "/22.jpg";
-    static Image src = Toolkit.getDefaultToolkit().getImage(img_path);
+    static final Image src = Toolkit.getDefaultToolkit().createImage(((URLClassLoader) PrintTest.class.getClassLoader()).findResource("22.jpg"));
     //获取打印服务对象
     static PrinterJob job = PrinterJob.getPrinterJob();
     static double paperW = job.getPageFormat(null).getPaper().getWidth();
@@ -18,10 +20,12 @@ public class PrintTest implements Printable {
     public PrintTest(String account, String password) {
         this.account = account;
         this.password = password;
+//        InputStream inputStream = this.getClass().getResourceAsStream("22.jpg");
+//        src = Toolkit.getDefaultToolkit().getImage(img_path);
     }
 
     /**
-     * @param Graphic指明打印的图形环境
+     * @param Graphic指明打印的图形环境fd
      * @param PageFormat指明打印页格式（页面大小以点为计量单位，1点为1英才的1/72，1英寸为25.4毫米。A4纸大致为595×842点）
      * @param pageIndex指明页号
      */
@@ -47,18 +51,17 @@ public class PrintTest implements Printable {
 
         if (true) {
 
-                //设置打印字体（字体名称、样式和点大小）（字体名称可以是物理或者逻辑名称）
-                //Java平台所定义的五种字体系列：Serif、SansSerif、Monospaced、Dialog 和 DialogInput
-                Font font = new Font("新宋体", Font.PLAIN, 35);
-                g2.setFont(font);//设置字体
-                //BasicStroke   bs_3=new   BasicStroke(0.5f);
-                float[] dash1 = {5.0f};
-                //设置打印线的属性。
-                //1.线宽 2、3、不知道，4、空白的宽度，5、虚线的宽度，6、偏移量
-                g2.setStroke(new BasicStroke(0.5f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1.0f, dash1, 0.0f));
-                //g2.setStroke(bs_3);//设置线宽
-                float heigth = font.getSize2D();//字体高度
-
+            //设置打印字体（字体名称、样式和点大小）（字体名称可以是物理或者逻辑名称）
+            //Java平台所定义的五种字体系列：Serif、SansSerif、Monospaced、Dialog 和 DialogInput
+            Font font = new Font("新宋体", Font.PLAIN, 35);
+            g2.setFont(font);//设置字体
+            //BasicStroke   bs_3=new   BasicStroke(0.5f);
+            float[] dash1 = {5.0f};
+            //设置打印线的属性。
+            //1.线宽 2、3、不知道，4、空白的宽度，5、虚线的宽度，6、偏移量
+            g2.setStroke(new BasicStroke(0.5f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1.0f, dash1, 0.0f));
+            //g2.setStroke(bs_3);//设置线宽
+            float heigth = font.getSize2D();//字体高度
 
 
 //
@@ -70,24 +73,24 @@ public class PrintTest implements Printable {
 //                double pageH = pf.getImageableHeight();
 //                double pageW= 595.2;
 //                double pageH = 192.7;
-                double imageW = 2480;//src.getWidth(c);
-                double imageH = 803;//src.getHeight(c);
+            double imageW = 2480;//src.getWidth(c);
+            double imageH = 803;//src.getHeight(c);
 //                double scaleX = pageW/2480;
 //                double scaleY = pageH/803;
 //                double scaleFactor = Math.min(scaleX, scaleY);
-                g2.scale(0.24, 0.24);
-                g2.drawImage(src, (int) x, (int) y, c);
+            g2.scale(0.24, 0.24);
+            g2.drawImage(src, (int) x, (int) y, c);
 //
 //
 //
 //                System.out.println("img_Height="+img_Height+"img_width="+img_width) ;
 
-                g2.drawString(str, (float) imageW - 506, (float) imageH - 200);
-                g2.drawString(str2, (float) imageW - 506, (float) imageH - 120);
+            g2.drawString(str, (float) imageW - 506, (float) imageH - 200);
+            g2.drawString(str2, (float) imageW - 506, (float) imageH - 120);
 
-                // g2.drawImage(src,(int)x,(int)(y+1*heigth+img_Height+11),c);
+            // g2.drawImage(src,(int)x,(int)(y+1*heigth+img_Height+11),c);
 
-                return PAGE_EXISTS;
+            return PAGE_EXISTS;
 
         }
         return NO_SUCH_PAGE;
@@ -95,8 +98,7 @@ public class PrintTest implements Printable {
     }
 
 
-    public static void printInterface(JTextArea textArea,java.util.List<String> account, java.util.List<String> password) {
-
+    public static void printInterface(JTextArea textArea, java.util.List<String> account, java.util.List<String> password) {
 
 
         //    通俗理解就是书、文档
@@ -110,33 +112,35 @@ public class PrintTest implements Printable {
         p.setImageableArea(0, 0, 595.2, 192.7);//A4(595 X 842)设置打印区域，其实0，0应该是72，72，因为A4纸的默认X,Y边距是72
         pf.setPaper(p);
         //    把 PageFormat 和 Printable 添加到书中，组成一个页面
-        Book bookfirst = new Book();
-        bookfirst.append(new PrintTest("", ""), pf);
-        job.setPageable(bookfirst);
+        Book firstPrintContent = new Book();
+        firstPrintContent.append(new PrintTest(account.get(0), password.get(0)), pf);
+        job.setPageable(firstPrintContent);
         try {
             job.print();
         } catch (PrinterException e) {
             e.printStackTrace();
         }
-
         try {
+            Thread.sleep(20);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        try {
+
             //可以用printDialog显示打印对话框，在用户确认后打印；也可以直接打印
             //boolean a=job.printDialog();
             //if(a)
             //{
-
-            for (int  i = 0; i< account.size();i++) {
-
-                if(account.get(i) != null && password.get(i) != null){
-                    textArea.setText(textArea.getText() + "\n" + "["+account.get(i)+" ==> "+password.get(i)+"] 已打印");
-                    Book book = new Book();
+            Book book = new Book();
+            for (int i = 0; i < account.size(); i++) {
+                if (account.get(i) != null && password.get(i) != null) {
+                    textArea.setText(textArea.getText() + "\n" + "[" + account.get(i) + " ==> " + password.get(i) + "] 已打印");
                     book.append(new PrintTest(account.get(i), password.get(i)), pf);
                     // 设置打印类
-                    job.setPageable(book);
-                    job.print();
                 }
-
             }
+            job.setPageable(book);
+            job.print();
             //}
         } catch (PrinterException e) {
             e.printStackTrace();
