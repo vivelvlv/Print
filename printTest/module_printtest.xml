@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_printtest" default="compile.module.printtest">
+  <dirname property="module.printtest.basedir" file="${ant.file.module_printtest}"/>
+  
+  <property name="module.jdk.home.printtest" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.printtest" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.printtest" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.printtest" value="-encoding UTF-8 -source 1.6 ${compiler.args}"/>
+  
+  <property name="printtest.output.dir" value="${module.printtest.basedir}/out/production/printTest"/>
+  <property name="printtest.testoutput.dir" value="${module.printtest.basedir}/out/test/printTest"/>
+  
+  <path id="printtest.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="printtest.module.production.classpath">
+    <path refid="${module.jdk.classpath.printtest}"/>
+  </path>
+  
+  <path id="printtest.runtime.production.module.classpath">
+    <pathelement location="${printtest.output.dir}"/>
+  </path>
+  
+  <path id="printtest.module.classpath">
+    <path refid="${module.jdk.classpath.printtest}"/>
+    <pathelement location="${printtest.output.dir}"/>
+  </path>
+  
+  <path id="printtest.runtime.module.classpath">
+    <pathelement location="${printtest.testoutput.dir}"/>
+    <pathelement location="${printtest.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.printtest">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.printtest">
+    <patternset refid="excluded.from.module.printtest"/>
+  </patternset>
+  
+  <path id="printtest.module.sourcepath">
+    <dirset dir="${module.printtest.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.printtest" depends="compile.module.printtest.production,compile.module.printtest.tests" description="Compile module printTest"/>
+  
+  <target name="compile.module.printtest.production" depends="register.custom.compilers" description="Compile module printTest; production classes">
+    <mkdir dir="${printtest.output.dir}"/>
+    <javac2 destdir="${printtest.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.printtest}/javac">
+      <compilerarg line="${compiler.args.printtest}"/>
+      <bootclasspath refid="printtest.module.bootclasspath"/>
+      <classpath refid="printtest.module.production.classpath"/>
+      <src refid="printtest.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.printtest"/>
+    </javac2>
+    
+    <copy todir="${printtest.output.dir}">
+      <fileset dir="${module.printtest.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.printtest.tests" depends="register.custom.compilers,compile.module.printtest.production" description="compile module printTest; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.printtest" description="cleanup module">
+    <delete dir="${printtest.output.dir}"/>
+    <delete dir="${printtest.testoutput.dir}"/>
+  </target>
+</project>
